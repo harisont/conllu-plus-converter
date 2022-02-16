@@ -1,5 +1,4 @@
 from conllu import *
-import conllu
 
 std_fields = ["id", 
               "form", 
@@ -13,6 +12,10 @@ std_fields = ["id",
               "misc"]
 
 def from_plus_file(path):
+    """
+    Given the path to a CoNLL-U Plus file, return the corresponding plain 
+    CoNLL-U string.
+    """
     with open(path) as f:
         plus_fields = parse_conllu_plus_fields(f)
         plus_content = f.read()
