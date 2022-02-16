@@ -1,5 +1,29 @@
 # conllu-plus-converter
-Convert CoNLL-U Plus files to ordinary CoNLL-u and vice versa.
+Convert CoNLL-U Plus files to plain CoNLL-U and vice versa.
+
+When CoNNL-U Plus files have a lot of project-specific extra annotations under [MISC](https://universaldependencies.org/misc.html), using [CoNLL-U Plus](https://universaldependencies.org/ext-format.html) can be much nicer. Unfortunately, many tools for working with CoNNL-U files don't support CoNNL-U Plus  (yet), so it can be useful to convert files between the two formats without loosing any information.
+
+With this converter, for example, a CoNLL-U plus lacking XPOS and FEATS and having an extra field CORRECTION, such as this:
+
+```
+# global.columns = ID FORM LEMMA UPOS HEAD DEPREL DEPS MISC CORRECTION
+
+# sent_id = 1
+# text = dep thoughts
+1	dep	deep	ADJ	2	amod	_	_   deep
+2	thoughts	thought	NOUN	0	root	_	_   _
+```
+
+is converted to plain CoNNL-U by padding the missing columns with underscores and moving the information contained in the extra columns to MISC as `COLUMN_NAME=value` pairs:
+
+```
+# sent_id = 1
+# text = dep thoughts
+1       dep     deep    ADJ     _       _       2       amod    _       _|CORRECTION=deep
+2       thoughts        thought NOUN    _       _       0       root    _       _|CORRECTION=_
+```
+
+In this way, it is always possible to convert the resulting file to its original CoNNL-U Plus form.
 
 ## Dependencies
 - `conllu`
