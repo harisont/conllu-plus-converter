@@ -1,4 +1,5 @@
 from conllu import *
+import argparse
 
 std_fields = ["ID", 
               "FORM", 
@@ -97,5 +98,27 @@ def to_plus(path, fields):
     
 
 if __name__ == "__main__":
-    #print(from_plus("test/best.conllup"))
-    print(to_plus("test/best.conllu", ["ID", "FORM", "LEMMA", "UPOS", "HEAD", "DEPREL", "DEPS", "MISC", "CORRECTION", "REPL"]))
+    parser = argparse.ArgumentParser(
+        description="Convert between CoNLL-U Plus and plain CoNLL-u files."
+        )
+    parser.add_argument(
+        'mode', 
+        metavar='MODE', 
+        type=str, 
+        help='''either "from_plus" (CoNLL-U Plus -> plain CoNLL-U)
+                or "to_plus=FIELDS" (plain CoNNL-U -> CoNLL-U Plus),
+                where FIELDS is a comma-separated list of the desired fields 
+                for the CoNLL-U Plus (no spaces!).'''
+        )
+    parser.add_argument(
+        'path', 
+        metavar='PATH', 
+        type=str, 
+        help='path to the file to be converted')
+    args = parser.parse_args()
+
+    if args.mode == "from_plus":
+        print(from_plus(args.path))
+    elif args.mode.startswith("to_plus"):
+        fields = args.mode.split("=",1)[1].split(",")
+        print(to_plus(args.path, fields))
