@@ -11,7 +11,7 @@ std_fields = ["id",
               "deps", 
               "misc"]
 
-def from_plus_file(path):
+def from_plus(path):
     """
     Given the path to a CoNLL-U Plus file, return the corresponding plain 
     CoNLL-U string.
@@ -44,12 +44,10 @@ def from_plus_file(path):
 
     sentences = list(map(from_plus_sentence, plus_sentences))
     return "\n".join([sentence.serialize() for sentence in sentences])
-
-        
         
 
-def to_plus_file(conllu_file):
+def to_plus(conllu_file):
     pass
 
 if __name__ == "__main__":
-    print(from_plus_file("test/test.conllup"))
+    print(from_plus("test/test.conllup"))
