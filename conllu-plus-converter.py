@@ -23,6 +23,10 @@ def from_plus(path):
 
     def from_plus_sentence(plus_sent):
         sent = TokenList()
+        sent.metadata = plus_sent.metadata
+
+        # workaround for globals being treated as sentence metadata by conllu
+        plus_sent.metadata.pop("global.columns", None)
 
         def from_plus_token(plus_tok):
             tok = {}
@@ -33,11 +37,11 @@ def from_plus(path):
                     tok[field] = "_"
             for field in set(plus_fields) - set(std_fields):
                 plus_key = field
-                plus_val = plus_tok[field]
-                if "misc" in tok:
-                    tok["misc"] += ("|{}={}".format(plus_key, plus_val))
+                plus_val = plus_tok[field] if field in plus_tok else "_"
+                if "MISC" in tok:
+                    tok["MISC"] += ("|{}={}".format(plus_key, plus_val))
                 else:
-                    tok["misc"] = ("{}={}".format(plus_key, plus_val))
+                    tok["MISC"] = ("{}={}".format(plus_key, plus_val))
             return tok
         
         for plus_tok in plus_sent:
@@ -45,29 +49,32 @@ def from_plus(path):
         return sent
 
     sentences = list(map(from_plus_sentence, plus_sentences))
-    return "\n".join([sent.serialize() for sent in sentences])
+    return "".join([sent.serialize() for sent in sentences])
         
 
-def to_plus(path, plus_fields):
+def to_plus(path, fields):
     with open(path) as f:
         sentences = parse(f.read())
-        plus_fields = [field.upper() for field in plus_fields]
+        fields = [field.upper() for field in fields] # fields of conllu+ file
+        plus_fields = set(fields) - set(std_fields) # nonstandard fields
 
         def to_plus_sentence(sent):
             plus_sent = TokenList()
+            plus_sent.metadata = sent.metadata
 
             def to_plus_token(tok):
                 plus_tok = {}
-                for field in plus_fields:
-                    if field == "misc":
+                for field in fields:
+                    if field == "MISC":
                         # dunno if this actually works, need to test
-                        plus_tok[field] = dict(filter(lambda p: p[0] not in plus_fields, list(tok["misc"].items())))
+                        plus_tok[field] = dict(filter(lambda p: p[0] not in plus_fields, tok["misc"].items()))
                     elif field in std_fields:
-                        # according to this damn library, field names are lowercase, but key names are uppercase
+                        # using the conllu library, field names are lowercase
+                        # but key names in Key=val pairs are uppercase (damn!)
                         plus_tok[field] = tok[field.lower()]
                     else:
-                        # because Key=val pairs are parsed as dictionaries
-                        plus_tok[field] = tok["misc"][field]
+                        # since Key=val pairs are parsed as dictionaries (!)
+                        plus_tok[field] = tok["misc"][field] if field in tok["misc"] else "_"
                 return plus_tok
 
             for tok in sent:
@@ -75,10 +82,14 @@ def to_plus(path, plus_fields):
             return plus_sent
 
         plus_sentences = list(map(to_plus_sentence, sentences))
-        cols = "# global.columns = " + " ".join([field.upper() for field in plus_fields])
-        return "\n".join([cols] + [sent.serialize() for sent in plus_sentences])
+        comment = "# global.columns = {}\n".format(
+            " ".join([field.upper() for field in fields])
+            )
+        return "\n".join(
+            [comment] + [sent.serialize() for sent in plus_sentences]
+            )
     
 
 if __name__ == "__main__":
-    print(from_plus("test/test.conllup"))
-    print(to_plus("test/test.conllu", ["ID", "FORM", "A", "D", "R", "TID"]))
+    #print(from_plus("test/best.conllup"))
+    print(to_plus("test/best.conllu", ["ID", "FORM", "LEMMA", "UPOS", "HEAD", "DEPREL", "DEPS", "MISC", "CORRECTION", "REPL"]))
