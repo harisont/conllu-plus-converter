@@ -67,14 +67,20 @@ def to_plus(path, fields):
                 for field in fields:
                     if field == "MISC":
                         # dunno if this actually works, need to test
-                        plus_tok[field] = dict(filter(lambda p: p[0] not in plus_fields, tok["misc"].items()))
+                        plus_tok[field] = dict(filter(
+                            lambda p: p[0] not in plus_fields, 
+                            tok["misc"].items()
+                            ))
                     elif field in std_fields:
                         # using the conllu library, field names are lowercase
                         # but key names in Key=val pairs are uppercase (damn!)
                         plus_tok[field] = tok[field.lower()]
                     else:
                         # since Key=val pairs are parsed as dictionaries (!)
-                        plus_tok[field] = tok["misc"][field] if field in tok["misc"] else "_"
+                        if field in tok["misc"]:
+                            plus_tok[field] = tok["misc"][field]  
+                        else:
+                            plus_tok[field] = "_"
                 return plus_tok
 
             for tok in sent:
