@@ -3,7 +3,7 @@ Convert CoNLL-U Plus files to plain CoNLL-U and vice versa.
 
 When CoNNL-U Plus files have a lot of project-specific extra annotations under [MISC](https://universaldependencies.org/misc.html), using [CoNLL-U Plus](https://universaldependencies.org/ext-format.html) can be much nicer. Unfortunately, many tools for working with CoNNL-U files don't support CoNNL-U Plus  (yet), so it can be useful to convert files between the two formats without loosing any information.
 
-With this converter, for example, a CoNLL-U plus lacking XPOS and FEATS and having an extra field CORRECTION, such as this:
+With this converter, for example, a CoNLL-U Plus file lacking XPOS and FEATS and having an extra field CORRECTION, such as this:
 
 ```
 # global.columns = ID FORM LEMMA UPOS HEAD DEPREL DEPS MISC CORRECTION
