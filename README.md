@@ -33,10 +33,7 @@ In this way, it is always possible to convert the resulting file to its original
 Assuming you have Python installed, installation goes as for most other Python programs:
 
 1. install the missing dependencies (e.g. `pip install conllu`)
-2. clone this reporitory and move inside, e.g.:
-   ```
-   git clone https://github.com/harisont/conllu-plus-converter && cd conllu-plus-converter
-   ```
+2. clone this reporitory and move inside it
 3. mark the Python file as executable (`chmod +x conllu-plus-converter.py`)
 4. add, as the file's first line, the path to your Python interpreter (e.g. `#!/usr/bin/env python`)
 5. copy or move the file to a folder in your `PATH`, e.g. `usr/bin`
@@ -52,7 +49,7 @@ connlup from_plus PATH
 This can be useful also to normalize "simplified" CoNLL-U files (i.e. files where some columns have been omitted). To do that, add your simplified CoNNL-U file a comment line such as:
 
 ```
-# global.columns = ID FORM LEMMA UPOS HEAD DEPREL DEPS MISC
+# global.columns = ID FORM LEMMA UPOS XPOS HEAD DEPREL DEPS MISC
 ```
 
 indicating what columns your file actually contains (in the example, all but XPOS and FEATS).
